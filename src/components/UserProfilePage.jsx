@@ -32,7 +32,7 @@ const ProfileGistsPage = () => {
           gists.map((gist) => (
             <div key={gist.$id} className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-6">
               <img
-                src={gist.owner?.avatar_url || 'https://via.placeholder.com/80'} // Display user's avatar or placeholder
+                src={gist.owner?.avatar_url || 'https://via.placeholder.com/80'} 
                 alt={gist.owner?.login || 'User Avatar'}
                 className="w-16 h-16 rounded-full"
               />

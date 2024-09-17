@@ -42,9 +42,9 @@ const LandingPage = () => {
           <p className="text-lg text-gray-600">Browse through the latest public gists on GitHub.</p>
         </div>
         <img
-          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"  // Link to GitHub logo
+          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
           alt="GitHub"
-          className="w-16 h-16"  // Adjust the size of the logo
+          className="w-16 h-16"  
         />
       </header>
 
@@ -54,7 +54,7 @@ const LandingPage = () => {
         {gists.length === 0 ? (
           <p className="text-center text-gray-500">No gists found.</p>
         ) : (
-          <ul className="space-y-6">  {/* Increased spacing for a cleaner look */}
+          <ul className="space-y-6">  
             {gists.map((gist) => (
               <li key={gist.id}>
                 <GistDetail gist={gist} />
