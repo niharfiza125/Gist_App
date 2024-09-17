@@ -1,71 +1,78 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import authService from '../appwrite/authService';
-import { loginStart, loginSuccess, loginFailure } from '../store/authSlice';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Pagination from './Pagination';
+import GistDetail from './GistDetail'; 
 
-const LoginPage = () => {
-  const [error, setError] = useState('');
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { loading } = useSelector((state) => state.auth);
+const LandingPage = () => {
+  const [gists, setGists] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const handleGitHubLogin = async () => {
-    dispatch(loginStart());
-    setError('');
+  useEffect(() => {
+    fetchGists(currentPage);
+  }, [currentPage]);
 
+  const fetchGists = async (page) => {
+    setLoading(true);
     try {
-      await authService.loginWithGitHub();
-      const userSession = await authService.getCurrentUser();
-      if (userSession) {
-        dispatch(loginSuccess({ userData: userSession }));
-        navigate('/profile');
-      }
-    } catch (err) {
-      dispatch(loginFailure({ error: err.message }));
-      setError(err.message || 'Login failed. Please try again.');
+      const response = await axios.get(
+        `https://api.github.com/gists/public?page=${page}&per_page=${pageSize}`
+      );
+      setGists(response.data);
+      setTotalItems(response.headers['x-total-count'] || response.data.length * 100);
+    } catch (error) {
+      setError('Error fetching gists');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-10 rounded-lg shadow-lg max-w-md w-full">
-        <div className="flex flex-col items-center mb-6">
-        
-          <img
-            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
-            alt="GitHub"
-            className="w-16 h-16 mb-4"  
-          />
-          <h1 className="text-3xl font-extrabold text-gray-800 mb-4">Login with GitHub</h1>
-          <p className="text-gray-600 mb-6 text-center">Access your gists and manage your profile</p>
+    <div className="container mx-auto p-6">
+      <header className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-4xl font-extrabold text-gray-800 mb-2">Public Gists</h1>
+          <p className="text-lg text-gray-600">Browse through the latest public gists on GitHub.</p>
         </div>
-        <button
-          onClick={handleGitHubLogin}
-          className="w-full flex items-center justify-center bg-gray-800 text-white py-3 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 ease-in-out"
-          disabled={loading}
-        >
-          {loading ? (
-            <svg className="animate-spin h-6 w-6 mr-3 text-white" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="none" stroke="currentColor" strokeWidth="4" d="M4 12a8 8 0 1 1 16 0A8 8 0 0 1 4 12z"></path>
-            </svg>
-          ) : (
-            <>
-              <img
-                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
-                alt="GitHub"
-                className="w-6 h-6 mr-2"  
-              />
-              <span className="text-lg font-medium">Login with GitHub</span>
-            </>
-          )}
-        </button>
-        {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-      </div>
+        <img
+          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"  // Link to GitHub logo
+          alt="GitHub"
+          className="w-16 h-16"  // Adjust the size of the logo
+        />
+      </header>
+
+      {loading && <p className="text-center text-gray-500">Loading...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+      <section>
+        {gists.length === 0 ? (
+          <p className="text-center text-gray-500">No gists found.</p>
+        ) : (
+          <ul className="space-y-6">  {/* Increased spacing for a cleaner look */}
+            {gists.map((gist) => (
+              <li key={gist.id}>
+                <GistDetail gist={gist} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <Pagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
 
-export default LoginPage;
+export default LandingPage;
 

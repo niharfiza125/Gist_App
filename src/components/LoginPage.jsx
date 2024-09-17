@@ -31,9 +31,12 @@ const LoginPage = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-10 rounded-lg shadow-lg max-w-md w-full">
         <div className="flex flex-col items-center mb-6">
-          <div className="flex items-center justify-center w-20 h-20 bg-gray-800 rounded-full mb-4">
-            <i className="fab fa-github fa-4x text-white"></i>
-          </div>
+          {/* GitHub logo using image */}
+          <img
+            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+            alt="GitHub"
+            className="w-16 h-16 mb-4"  // Adjust size and margin
+          />
           <h1 className="text-3xl font-extrabold text-gray-800 mb-4">Login with GitHub</h1>
           <p className="text-gray-600 mb-6 text-center">Access your gists and manage your profile</p>
         </div>
@@ -49,7 +52,11 @@ const LoginPage = () => {
             </svg>
           ) : (
             <>
-              <i className="fab fa-github fa-lg mr-2"></i>
+              <img
+                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+                alt="GitHub"
+                className="w-6 h-6 mr-2"  // GitHub logo on the button
+              />
               <span className="text-lg font-medium">Login with GitHub</span>
             </>
           )}
